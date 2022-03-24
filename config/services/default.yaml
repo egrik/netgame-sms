@@ -1,0 +1,43 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  App\:
+    resource: '../../src/*'
+    exclude:
+      - '../../src/Dto'
+      - '../../src/Entity'
+      - '../../src/Exception'
+
+  app.sms_provider.remote:
+    class: \Service\Sms\Provider\RemoteProvider
+    tags:
+      - { name: 'app.sms_provider', transport: !php/const Dictionary\SmsTransport::REMOTE }
+
+  app.sms_provider.local:
+    class: \Service\Sms\Provider\CompoundProvider
+    arguments:
+      $providerRegistry: '@app.sms_provider.local_registry'
+    tags:
+      - { name: 'app.sms_provider', transport: !php/const Dictionary\SmsTransport::LOCAL }
+
+  app.sms_provider.local_registry:
+    class: Service\Sms\SmsProviderRegistry
+    arguments: [ !tagged_iterator { tag: 'app.sms_provider.local', index_by: 'country' } ]
+
+  app.sms_provider.local.bsg:
+    class: \Service\Sms\Provider\BSGProvider
+    tags:
+      - { name: 'app.sms_provider.local', country: !php/const Dictionary\IsoCountry::UA }
+      - { name: 'app.sms_provider.local', country: !php/const Dictionary\IsoCountry::KZ }
+
+  app.sms_provider.local.send_pulse:
+    class: \Service\Sms\Provider\SendPulseProvider
+    tags:
+      - { name: 'app.sms_provider.local', country: !php/const Dictionary\IsoCountry::BY }
+
+  Service\Contract\SmsProviderRegistryInterface:
+    class: Service\Sms\SmsProviderRegistry
+    arguments: [ !tagged_iterator { tag: 'app.sms_provider', index_by: 'transport' } ]
