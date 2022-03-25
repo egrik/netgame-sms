@@ -4,22 +4,18 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Dictionary\SmsCode;
-use Service\Sms\Contract\SmsServiceInterface;
+use Service\Contract\UserServiceInterface;
 
 class AuthController
 {
     public function __construct(
-        private SmsServiceInterface $smsService
+        private UserServiceInterface $userService
     ) {
     }
 
-    public function remind(): Response
+    public function remind(string $phone): Response
     {
-        $phone = '3800000000';
-        $name = 'Tester';
-
-        $this->smsService->sendMessageAsTemplate(SmsCode::REMIND, $phone, ['name' => $name]);
+        $this->userService->remindPasswordByPhone($phone);
 
         return new Response(['message' => 'reminder_sent']);
     }
