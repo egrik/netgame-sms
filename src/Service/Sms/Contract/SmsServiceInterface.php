@@ -8,5 +8,5 @@ use Dictionary\SmsCode;
 
 interface SmsServiceInterface
 {
-    public function sendMessageAsTemplate(SmsCode $code, string $phone, array $variables): void;
+    public function produceMessageAsTemplate(SmsCode $code, string $phone, array $variables): void;
 }
