@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Processor;
 
+use Dictionary\Queue;
 use Dto\Queue\SmsDto;
 use Service\Sms\Contract\SmsProviderRegistryInterface;
 
@@ -11,6 +12,11 @@ class SmsTransportProcessor
 {
     public function __construct(private SmsProviderRegistryInterface $smsProviderRegistry)
     {
+    }
+
+    public static function getSubscribedQueue(): string
+    {
+        return Queue::SMS_TRANSPORT->value;
     }
 
     public function process(SmsDto $smsDto): void
